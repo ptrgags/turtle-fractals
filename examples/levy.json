@@ -1,0 +1,11 @@
+{
+    "x": 0,
+    "y": 0,
+    "angle": 45,
+    "length": 600,
+    "divisor": 1.5,
+    "start": "F",
+    "rules": {
+        "F": "+F--F+"
+    }
+}

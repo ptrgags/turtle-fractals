@@ -1,0 +1,12 @@
+{
+    "x": 0,
+    "y": 0,
+    "angle": 90,
+    "length": 600,
+    "divisor": 1.5,
+    "start": "FX",
+    "rules": {
+        "X": "X+YF+",
+        "Y": "-FX-Y"
+    }
+}
