@@ -1,4 +1,4 @@
-from LSystem import LSystem, LSystemOverflow
+from turtlelsystem.LSystem import LSystem, LSystemOverflow
 from nose.tools import raises
 
 ALGAE_START = "A"
