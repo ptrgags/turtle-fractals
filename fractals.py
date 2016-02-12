@@ -1,32 +1,10 @@
 import sys
 import json
-from turtlebots import TurtleRobot, TurtleSVG
-
-initiator = "F--F--F"
-rules = {
-    "F": "F+F--F+F"
-}
-angle = 60
-initial_size = 600
-scale = 1.0 / 3.0
-MAX_STEPS = 100000
-
-def iterate(initiator, rules, iterations):
-    output = initiator
-    for i in xrange(iterations):
-        next_iteration = ""
-        for ch in output:
-            if ch in rules:
-                next_iteration += rules[ch]
-            else:
-                next_iteration += ch
-        output = next_iteration
-    return output
+from turtlelsystem.LSystem import LSystem, LSystemOverflow
+from turtlelsystem.TurtleMachine import TurtleMachine
+from turtlelsystem.TurtleSVGMachine import TurtleSVGMachine
 
 def iteration_commands(steps, angle, step_size):
-    if len(steps) > MAX_STEPS:
-        print "Error: desired steps: {} Maximum steps: {}".format(len(steps), MAX_STEPS)
-        return
     for step in steps:
         if step in ["F", "A", "B"]:
             yield "forward {}".format(step_size)
@@ -42,11 +20,16 @@ def perform_iteration(iteration, data):
     rules = data['rules']
     angle = data['angle']
     scale = 1.0 / data['divisor']
-    size = data['length']
+    initial_size = data['length']
 
-    steps = iterate(initiator, rules, iteration)
-    size = initial_size * scale ** iteration
-    return iteration_commands(steps, angle, size)
+    system = LSystem(initiator, rules)
+    try:
+        steps = system.nth(iteration)
+        size = initial_size * scale ** iteration
+        return iteration_commands(steps, angle, size)
+    except LSystemOverflow:
+        print "ERROR: Too Many commands! Try a smaller iteration number"
+        sys.exit(1)
 
 if __name__ == '__main__':
     try:
@@ -63,12 +46,12 @@ if __name__ == '__main__':
         y = data.get('y', 0)
 
     if turtle_type == "turtle":
-        turtle = TurtleRobot(x, y)
+        turtle = TurtleMachine(x, y)
     elif turtle_type == "svg":
-        turtle = TurtleSVG(x, y)
+        turtle = TurtleSVGMachine(x, y)
 
     for command in perform_iteration(iterations, data):
-        turtle.do_command(*command.split(' '))
+        turtle.do_command(command)
 
     if turtle_type == "turtle":
         turtle.freeze()
