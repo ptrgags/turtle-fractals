@@ -1,5 +1,6 @@
 import sys
 import json
+import argparse
 from turtlelsystem.LSystem import LSystem, LSystemOverflow
 from turtlelsystem.TurtleMachine import TurtleMachine
 from turtlelsystem.TurtleSVGMachine import TurtleSVGMachine
@@ -32,29 +33,30 @@ def perform_iteration(iteration, data):
         sys.exit(1)
 
 if __name__ == '__main__':
-    try:
-        iterations = int(sys.argv[1])
-        input_file = sys.argv[2]
-        turtle_type = sys.argv[3].lower()
-    except (ValueError, IndexError):
-        print "Usage: turtleDrawer.py <iterations> <file> <turtle|svg>"
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--iterations", required=True, type=int,
+        help="Number of iterations.")
+    parser.add_argument("-f", "--input-file", required=True,
+        help="Input JSON file that describes the fractal")
+    parser.add_argument("-t", "--turtle-type", required=True,
+        choices=['turtle', 'svg'], help="Type of turtle graphics output")
+    args = parser.parse_args()
 
-    with open(input_file, "rb") as f:
+    with open(args.input_file, "rb") as f:
         data = json.loads(f.read())
         x = data.get('x', 0)
         y = data.get('y', 0)
 
-    if turtle_type == "turtle":
+    if args.turtle_type == "turtle":
         turtle = TurtleMachine(x, y)
-    elif turtle_type == "svg":
+    elif args.turtle_type == "svg":
         turtle = TurtleSVGMachine(x, y)
 
-    for command in perform_iteration(iterations, data):
+    for command in perform_iteration(args.iterations, data):
         turtle.do_command(command)
 
-    if turtle_type == "turtle":
+    if args.turtle_type == "turtle":
         turtle.freeze()
-    elif turtle_type == "svg":
+    elif args.turtle_type == "svg":
         with open("output.html", "wb") as f:
             f.write(turtle.html + "\n")
