@@ -2,35 +2,9 @@ import sys
 import json
 import argparse
 from turtlelsystem.LSystem import LSystem, LSystemOverflow
+from turtlelsystem.TurtleCommands import TurtleCommands
 from turtlelsystem.TurtleMachine import TurtleMachine
 from turtlelsystem.TurtleSVGMachine import TurtleSVGMachine
-
-def iteration_commands(steps, angle, step_size):
-    for step in steps:
-        if step in ["F", "A", "B"]:
-            yield "forward {}".format(step_size)
-        elif step == "+":
-            yield "right {}".format(angle)
-        elif step == "-":
-            yield "left {}".format(angle)
-        else:
-            pass
-
-def perform_iteration(iteration, data):
-    initiator = data['start']
-    rules = data['rules']
-    angle = data['angle']
-    scale = 1.0 / data['divisor']
-    initial_size = data['length']
-
-    system = LSystem(initiator, rules)
-    try:
-        steps = system.nth(iteration)
-        size = initial_size * scale ** iteration
-        return iteration_commands(steps, angle, size)
-    except LSystemOverflow:
-        print "ERROR: Too Many commands! Try a smaller iteration number"
-        sys.exit(1)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -52,7 +26,8 @@ if __name__ == '__main__':
     elif args.turtle_type == "svg":
         turtle = TurtleSVGMachine(x, y)
 
-    for command in perform_iteration(args.iterations, data):
+    commands = TurtleCommands(data, args.iterations)
+    for command in commands:
         turtle.do_command(command)
 
     if args.turtle_type == "turtle":
