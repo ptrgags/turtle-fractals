@@ -19,4 +19,4 @@ def test_left():
 def test_right():
     turtle = TurtleSVGMachine()
     turtle.do_command("RIGHT 30")
-    assert_almost_equal(turtle.theta, -330.0)
+    assert_almost_equal(turtle.theta, 330.0)

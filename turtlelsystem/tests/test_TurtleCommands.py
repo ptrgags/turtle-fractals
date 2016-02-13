@@ -34,7 +34,7 @@ def test_nth():
             assert command.split(" ")[0] == expected
 
     for i in xrange(2):
-        yield trial(i)
+        yield trial, i
 
 @raises(LSystemOverflow)
 def test_overflow():

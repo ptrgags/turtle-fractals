@@ -32,28 +32,28 @@ class TurtleMachine(Machine):
     def forward(self, amount):
         try:
             self.turtle.forward(float(amount))
-            return "Turtle moves forward {} units!".format(amount)
+            return "Turtle moves forward {0} units!".format(amount)
         except ValueError:
             return "usage: forward <amount>"
 
     def backward(self, amount):
         try:
             self.turtle.backward(float(amount))
-            return "Turtle moves backward {} units!".format(amount)
+            return "Turtle moves backward {0} units!".format(amount)
         except ValueError:
             return "usage: backward <amount>"
 
     def left(self, amount):
         try:
             self.turtle.left(float(amount))
-            return "Turtle turns left {} degrees!".format(amount)
+            return "Turtle turns left {0} degrees!".format(amount)
         except ValueError:
             return "usage: left <angle>"
 
     def right(self, amount):
         try:
             self.turtle.right(float(amount))
-            return "Turtle turns right {} degrees!".format(amount)
+            return "Turtle turns right {0} degrees!".format(amount)
         except ValueError:
             return "usage: right <angle>"
 
@@ -68,14 +68,14 @@ class TurtleMachine(Machine):
     def color(self, red, green, blue):
         try:
             self.turtle.pencolor(int(red), int(green), int(blue))
-            "Turtle changes color to rgb({}, {}, {})!".format(red, green, blue)
+            "Turtle changes color to rgb({0}, {1}, {2})!".format(red, green, blue)
         except ValueError:
             return "usage: color <red> <green> <blue>"
 
     def move(self, x, y):
         try:
             self.turtle.setpos(float(x), float(y))
-            "Turtle moves to ({}, {})!".format(x, y)
+            "Turtle moves to ({0}, {1})!".format(x, y)
         except ValueError:
             return "usage: move <x> <y>"
 

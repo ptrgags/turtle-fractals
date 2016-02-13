@@ -13,13 +13,19 @@ class TurtleCommands(object):
             L-System
         :param int iterations: iteration to generate
         """
-        initiator = data['start']
-        rules = data['rules']
-        self.system = LSystem(initiator, rules)
-        self.angle = data['angle']
-        self.scale = 1.0 / data['divisor']
-        self.initial_size = data['length']
-        self.iterations = iterations
+        if iterations < 0:
+            raise ValueError("Iterations cannot be negative")
+
+        try:
+            initiator = data['start']
+            rules = data['rules']
+            self.system = LSystem(initiator, rules)
+            self.angle = data['angle']
+            self.scale = 1.0 / data['divisor']
+            self.initial_size = data['length']
+            self.iterations = iterations
+        except KeyError as e:
+            raise ValueError("Data JSON missing key {0}".format(e))
 
     def __iter__(self):
         """
@@ -52,10 +58,10 @@ class TurtleCommands(object):
         """
         for step in steps:
             if step in ["F", "A", "B"]:
-                yield "forward {}".format(size)
+                yield "FORWARD {0}".format(size)
             elif step == "+":
-                yield "right {}".format(angle)
+                yield "RIGHT {0}".format(angle)
             elif step == "-":
-                yield "left {}".format(angle)
+                yield "LEFT {0}".format(angle)
             else:
                 pass
