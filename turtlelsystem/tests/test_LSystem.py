@@ -9,7 +9,6 @@ ALGAE_RULES = {
 ALGAE_RESULTS = ["A", "AB", "ABA", "ABAAB", "ABAABABA", "ABAABABAABAAB"]
 
 def test_results():
-
     def trial(system, n, result):
         assert system.nth(n) == result
 

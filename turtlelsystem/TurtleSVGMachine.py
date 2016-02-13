@@ -2,7 +2,7 @@ import math
 from Machine import Machine
 
 class TurtleSVGMachine(Machine):
-    def __init__(self, origin_x, origin_y, width=1000, height=1000):
+    def __init__(self, origin_x=0, origin_y=0, width=1000, height=1000):
         super(TurtleSVGMachine, self).__init__()
         self.width = width
         self.height = height
@@ -29,7 +29,7 @@ class TurtleSVGMachine(Machine):
     def backward(self, amount):
         try:
             self.forward(-float(amount))
-            return "Turtle moved backward {} degrees!".format(amount)
+            return "Turtle moved backward {} units!".format(amount)
         except ValueError as e:
             return "usage: backward <amount>"
 
