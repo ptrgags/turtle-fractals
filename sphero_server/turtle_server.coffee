@@ -82,7 +82,7 @@ class SpheroTurtle
             green: green & 0xFF
             blue: blue & 0xFF
         @orb.setRgbLed c, @noop
-        "Sphero changed color to rgb(#{red}, #{green}, #{blue})"
+        "Sphero changed color to rgb(#{c.red}, #{c.green}, #{c.blue})"
 
     stop: =>
         @orb.stop()
