@@ -5,6 +5,7 @@ from turtlelsystem.LSystem import LSystem, LSystemOverflow
 from turtlelsystem.TurtleCommands import TurtleCommands
 from turtlelsystem.TurtleMachine import TurtleMachine
 from turtlelsystem.TurtleSVGMachine import TurtleSVGMachine
+from turtlelsystem.SpheroTurtleMachine import SpheroTurtleMachine
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -13,7 +14,7 @@ if __name__ == '__main__':
     parser.add_argument("-f", "--input-file", required=True,
         help="Input JSON file that describes the fractal")
     parser.add_argument("-t", "--turtle-type", required=True,
-        choices=['turtle', 'svg'], help="Type of turtle graphics output")
+        choices=['turtle', 'svg', 'sphero'], help="Type of turtle graphics output")
     args = parser.parse_args()
 
     with open(args.input_file, "rb") as f:
@@ -25,6 +26,8 @@ if __name__ == '__main__':
         turtle = TurtleMachine(x, y)
     elif args.turtle_type == "svg":
         turtle = TurtleSVGMachine(x, y)
+    elif args.turtle_type == 'sphero':
+        turtle = SpheroTurtleMachine()
 
     commands = TurtleCommands(data, args.iterations)
     for command in commands:
