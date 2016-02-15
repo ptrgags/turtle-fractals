@@ -8,9 +8,12 @@ class SpheroTurtle
         @orb = sphero @port
         @connected = false
         @calibrated = false
+        @busy = true
         @theta = 0
         @orb.connect @connect
         @orb.on 'error', @noop
+        @client = null
+        @command_queue = []
 
     connect: =>
         console.log "Connected!"
@@ -20,49 +23,85 @@ class SpheroTurtle
 
     calibrate: =>
         @calibrated = true
-        @orb.finishCalibration @noop
+        @orb.finishCalibration @continue_processing
+
+    continue_processing: =>
+        @busy = false
+        @next_command()
+
+    next_command: =>
+        if @command_queue.length is 0
+            console.log "Queue empty, wait for further commands"
+        else
+            while not @busy and @command_queue.length isnt 0
+                command = @command_queue.shift()
+                result = @do_command command
+                console.log result
+
+    add_command: (command) =>
+        @command_queue.push command
+        if not @connected
+            @client.write "Woah there, Sphero's not ready yet! Command `#{command}`` was queued for later."
+        else if not @calibrated
+            @client.write "Patience my friend. Sphero is calibrating. Command `#{command}` was queued for later."
+        else if @busy
+            @client.write "Waiting for command to finish. Command `#{command}` was Queued for later."
+        else
+            @client.write "Running command `#{command}`..."
+            @next_command()
 
     do_command: (command) =>
-        if not @connected
-            "Hold your horses! Sphero isn't connected yet!"
-        else if not @calibrated
-            "Patience, my friend. Sphero likes to calibrate in peace."
-        else
-            [opcode, args...] = command.split(' ')
-            switch opcode.toLowerCase()
-                when "forward"
-                    [amount] = args
-                    amount = parseInt amount
-                    @forward amount
-                when "backward"
-                    [amount] = args
-                    amount = parseInt amount
-                    @backward amount
-                when "left"
-                    [angle] = args
-                    angle = parseInt angle
-                    @left angle
-                when "right"
-                    [angle] = args
-                    angle = parseInt angle
-                    @right angle
-                when "color"
-                    [red, green, blue] = args
-                    red = parseInt red
-                    green = parseInt green
-                    blue = parseInt blue
-                    @color red, green, blue
-                else
-                    "ERROR: not a valid command"
+        [opcode, args...] = command.split(' ')
+        switch opcode.toLowerCase()
+            when "forward"
+                [amount] = args
+                amount = parseFloat amount
+                if isNaN amount
+                    return "ERROR: amount is NaN"
+                @forward amount
+            when "backward"
+                [amount] = args
+                amount = parseFloat amount
+                if isNaN amount
+                    return "ERROR: amount is NaN"
+                @backward amount
+            when "left"
+                [angle] = args
+                angle = parseFloat angle
+                if isNaN angle
+                    return "ERROR: angle is NaN"
+                @left angle
+            when "right"
+                [angle] = args
+                angle = parseFloat angle
+                if isNaN angle
+                    return "ERROR: angle is NaN"
+                @right angle
+            when "color"
+                [red, green, blue] = args
+                red = parseInt red
+                green = parseInt green
+                blue = parseInt blue
+                if isNaN red
+                    return "ERROR: red is NaN"
+                if isNaN green
+                    return "ERROR: green is NaN"
+                if isNaN blue
+                    return "ERROR: blue is NaN"
+                @color red, green, blue
+            else
+                "ERROR: not a valid command"
 
     forward: (amount) =>
         @orb.roll 128, @theta
+        @busy = true
         setTimeout @stop, amount
         "Sphero moved forward for #{amount / 1000.0} seconds"
 
     backward: (amount) =>
         angle = (@theta + 180) % 360
         @orb.roll 128, angle
+        @busy = true
         setTimeout @stop, amount
         "Sphero moved backward for #{amount / 1000.0} seconds"
 
@@ -81,16 +120,24 @@ class SpheroTurtle
             red: red & 0xFF
             green: green & 0xFF
             blue: blue & 0xFF
-        @orb.setRgbLed c, @noop
+        @orb.setRgbLed c, @wait
         "Sphero changed color to rgb(#{c.red}, #{c.green}, #{c.blue})"
 
     stop: =>
         @orb.stop()
+        @continue_processing()
 
     noop: (err, data) ->
         if err
             console.log err
         console.log "Data: #{JSON.stringify(data)}"
+
+    wait: (err, data) =>
+        if err
+            console.log err
+        else
+            console.log "Data: #{JSON.stringify(data)}"
+        @continue_processing()
 
 sphero_turtle = new SpheroTurtle("COM9")
 
@@ -98,23 +145,24 @@ server = net.createServer (socket) ->
     socket.name = "#{socket.remoteAddress}:#{socket.remotePort}"
     socket.setEncoding("utf8")
 
-    if client?
+    if sphero_turtle.client?
         socket.write "Sorry, first come first serve"
         socket.destroy()
         return
     else
         socket.write "Welcome #{socket.name}"
-        client = socket
+        sphero_turtle.client = socket
 
     socket.on 'end', ->
-        client = null
+        sphero_turtle.client = null
+
 
     socket.on 'error', (error) ->
         if error.errno is "ECONNRESET"
             console.log "(Client #{socket.name} disconnected)"
         else
             console.log error
-        client = null
+        sphero_turtle.client = null
 
     line_buffer = ''
     socket.on 'data', (data) ->
@@ -122,9 +170,7 @@ server = net.createServer (socket) ->
         newline_index = line_buffer.indexOf '\n'
         while newline_index != -1
             line = line_buffer[...newline_index]
-            result = sphero_turtle.do_command(line)
-            console.log result
-            socket.write result
+            sphero_turtle.add_command line
             line_buffer = line_buffer[newline_index+1...]
             newline_index = line_buffer.indexOf '\n'
 

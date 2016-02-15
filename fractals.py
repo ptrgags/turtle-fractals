@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 import json
 import argparse
@@ -27,6 +28,9 @@ if __name__ == '__main__':
     elif args.turtle_type == "svg":
         turtle = TurtleSVGMachine(x, y)
     elif args.turtle_type == 'sphero':
+		#TODO: Try to handle this another way
+        data.setdefault('length', 0)
+        data['length'] *= 2
         turtle = SpheroTurtleMachine()
 
     commands = TurtleCommands(data, args.iterations)
