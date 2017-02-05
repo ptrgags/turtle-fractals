@@ -1,5 +1,5 @@
 import math
-from Machine import Machine
+from turtlelsystem.Machine import Machine
 
 class TurtleSVGMachine(Machine):
     def __init__(self, origin_x=0, origin_y=0, width=1000, height=1000):
@@ -88,4 +88,4 @@ class TurtleSVGMachine(Machine):
 if __name__ == "__main__":
     turtle = TurtleSVGMachine(0, 0)
     turtle.repl()
-    print turtle.svg
+    print(turtle.svg)

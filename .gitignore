@@ -1,2 +1,4 @@
 *.pyc
 *output.html
+node_modules
+*.log

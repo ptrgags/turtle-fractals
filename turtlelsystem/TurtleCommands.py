@@ -1,4 +1,4 @@
-from LSystem import LSystem
+from turtlelsystem.LSystem import LSystem
 
 class TurtleCommands(object):
     """
