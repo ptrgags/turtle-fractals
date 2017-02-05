@@ -1,3 +1,5 @@
+from compatibility import range
+
 class LSystemOverflow(Exception):
     """
     Exception that happens when
@@ -76,7 +78,7 @@ class LSystem(object):
         current = next(gen)
 
         #Continue to extract iterations
-        for i in xrange(n):
+        for i in range(n):
             current = next(gen)
-        
+
         return current

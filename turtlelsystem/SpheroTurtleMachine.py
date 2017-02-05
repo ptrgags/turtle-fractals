@@ -1,5 +1,5 @@
 import socket
-from Machine import Machine
+from turtlelsystem.Machine import Machine
 
 class SpheroTurtleMachine(Machine):
     ADDR = ('localhost', 3000)
@@ -28,7 +28,7 @@ class SpheroTurtleMachine(Machine):
         if ack.startswith("Sorry"):
             raise RuntimeError("Connection rejected by server.")
         else:
-            print "Connected!"
+            print("Connected!")
 
     def send_message(self, message):
         try:

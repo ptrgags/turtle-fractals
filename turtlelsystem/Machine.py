@@ -71,7 +71,7 @@ class Machine(object):
         """
         while self.running:
             command = raw_input(self.prompt_string)
-            print self.do_command(command)
+            print(self.do_command(command))
 
 if __name__ == "__main__":
     machine = Machine()

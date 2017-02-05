@@ -1,5 +1,5 @@
 import turtle
-from Machine import Machine
+from turtlelsystem.Machine import Machine
 
 class TurtleMachine(Machine):
     def __init__(self, origin_x, origin_y):

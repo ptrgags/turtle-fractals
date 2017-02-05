@@ -40,5 +40,5 @@ if __name__ == '__main__':
     if args.turtle_type == "turtle":
         turtle.freeze()
     elif args.turtle_type == "svg":
-        with open("output.html", "wb") as f:
+        with open("output.html", "w") as f:
             f.write(turtle.html + "\n")
